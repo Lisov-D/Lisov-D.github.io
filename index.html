@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Кейс ASKO — динамика показателей</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .grid {
+      display: grid;
+      gap: 24px;
+    }
+    @media (min-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px 18px 18px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      border: 1px solid #e5e7eb;
+      margin-top: 18px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .card-sub {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    canvas {
+      max-height: 320px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecfdf5;
+      color: #047857;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      margin-bottom: 18px;
+      border: 1px solid #bbf7d0;
+    }
+    .pill span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #16a34a;
+      font-weight: 600;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .kpi-box {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 8px 10px;
+      border: 1px solid #e5e7eb;
+    }
+    .kpi-label {
+      color: #6b7280;
+      margin-bottom: 3px;
+    }
+    .kpi-value {
+      font-weight: 600;
+      font-size: 14px;
+      color: #111827;
+    }
+    .text-block {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #111827;
+    }
+    .text-block p {
+      margin: 4px 0 8px;
+    }
+    .text-block ul {
+      margin: 4px 0 8px 18px;
+      padding-left: 0;
+    }
+    .text-block li {
+      margin: 2px 0;
+    }
+    .subgrid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 700px) {
+      .kpi-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .subgrid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Кейс ASKO — рост интернет-магазина</h1>
+    <div class="pill">
+      <span>2024–2025</span>динамика продуктовых и маркетинговых метрик
+    </div>
+
+    <!-- Цель, роль -->
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Цель проекта</div>
+        </div>
+        <div class="text-block">
+          <p>
+            Запустить интернет-магазин ASKO с нуля, выстроить стабильный поток органического трафика и продаж,
+            подключить маркетплейсы и довести проект до предсказуемого оборота и управляемых продуктовых метрик.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Роль и зона ответственности</div>
+        </div>
+        <div class="text-block">
+          <p>
+            Руководитель web-проекта / Product Manager e-commerce: отвечал за продукт (сайт),
+            трафик (SEO, маркетплейсы), аналитику, автоматизацию и работу команды (3 человека + подрядчики).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Основные работы по интернет-магазину -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Основные работы по интернет-магазину (сайт)</div>
+        <div class="card-sub">Что было сделано по продукту с нуля</div>
+      </div>
+      <div class="text-block subgrid-2">
+        <div>
+          <p><b>Базовая архитектура и инфраструктура:</b></p>
+          <ul>
+            <li>Проектирование структуры каталога: категории, подкатегории, фильтры, поисковые сценарии.</li>
+            <li>Запуск сайта на Bitrix: настройка окружения, модулей, интеграция с 1С и CRM.</li>
+            <li>Реализация корзины, оформления заказа, личного кабинета, уведомлений по заказам.</li>
+            <li>Подключение и настройка платёжных систем, способов доставки, расчёт стоимости.</li>
+            <li>Внедрение аналитики: Я.Метрика, сквозная аналитика, событийная модель, цели и конверсии.</li>
+          </ul>
+        </div>
+        <div>
+          <p><b>Улучшения UX, конверсии и контента:</b></p>
+          <ul>
+            <li>Детальная проработка карточки товара: характеристики, медиа, рекомендации, связанные товары.</li>
+            <li>Добавлен ИИ-обзор по товару, блок «Функции и преимущества», работа с отзывами и рейтингами.</li>
+            <li>Оптимизированы фильтры и навигация: быстрый переход к нужным товарам, снижение “блужданий” по каталогу.</li>
+            <li>Адаптивный интерфейс под мобильный трафик: переработаны ключевые сценарии с учётом смартфонов.</li>
+            <li>Техническая SEO-оптимизация: скорость, микроразметка, метаданные, корректная индексация каталога.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+<!-- Основные работы по маркетплейсам -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Основные работы по маркетплейсам</div>
+    <div class="card-sub">Ozon, Яндекс.Маркет, СБМ — структура, продвижение, автоматизация</div>
+  </div>
+  <div class="text-block subgrid-2">
+    <div>
+      <p><b>Инфраструктура и каталог:</b></p>
+      <ul>
+        <li>Полная интеграция с OZ/ЯМ/СБМ: остатки, цены, характеристики, статусы.</li>
+        <li>Автоматизация обновлений данных через API: цены, сток, логистика.</li>
+        <li>Синхронизация SKU между МП и сайтом, устранение дублей и ошибок.</li>
+        <li>Создание и оптимизация карточек товаров, инфографика, фото, описания.</li>
+        <li>Единая структура характеристик для корректного участия в фильтрах.</li>
+      </ul>
+    </div>
+    <div>
+      <p><b>Продвижение, аналитика и работа с конверсией:</b></p>
+      <ul>
+        <li>Оптимизация карточек под МП-алгоритмы: названия, преимущества, медиа.</li>
+        <li>Работа с рейтингами и отзывами: обработка негатива и рост среднего балла.</li>
+        <li>Настройка рекламы: Ozon Performance, ЯМ CPC/CPA, СБМ Ads.</li>
+        <li>Парсинг конкурентов и мониторинг цен (Python), анализ спроса.</li>
+        <li>Создание отчётов и дашбордов: продажи, позиции, конверсии, трафик.</li>
+        <li>Подбор товаров под акции, спецразделы, продвижение категорий.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- Итоги в цифрах по маркетплейсам -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Итоги в цифрах по маркетплейсам</div>
+    <div class="card-sub">Ozon, Яндекс.Маркет, СБМ — рост, эффективность, ассортимент</div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-box">
+      <div class="kpi-label">Суммарная выручка МП / мес</div>
+      <div class="kpi-value">0 ₽ → 59,2 млн ₽</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-label">Доля МП в обороте</div>
+      <div class="kpi-value">0% → 58%</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-label">Активных SKU</div>
+      <div class="kpi-value">0 → 280+</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-label">Средний рейтинг товаров</div>
+      <div class="kpi-value">3,8 → 4,6 ★</div>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-box">
+      <div class="kpi-label">Органические показы категорий</div>
+      <div class="kpi-value">рост x4–x7</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-label">Конверсия улучшенных карточек</div>
+      <div class="kpi-value">1,1% → 3,7%</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-label">Количество отзывов</div>
+      <div class="kpi-value">0 → 1300+</div>
+    </div>
+
+    <div class="kpi-box">
+      <div class="kpi-label">Качество контента</div>
+      <div class="kpi-value">100% ключевых SKU</div>
+    </div>
+  </div>
+</div>
+
+    <!-- Итоги в цифрах -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Итоги в цифрах (старт → текущий момент)</div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-label">Оборот / мес (интернет-магазин)</div>
+          <div class="kpi-value">0 ₽ → 22 291 111 ₽</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Трафик из поиска</div>
+          <div class="kpi-value">0 → 20 000 визитов/мес</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Конверсия сайта</div>
+          <div class="kpi-value">0,2% → 0,9%</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Отказы</div>
+          <div class="kpi-value">35% → 18%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO-оптимизация -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">SEO-оптимизация и работа с поиском</div>
+        <div class="card-sub">Основные направления, которые привели к росту трафика</div>
+      </div>
+      <div class="text-block subgrid-2">
+        <div>
+          <p><b>Стратегия и технический фундамент:</b></p>
+          <ul>
+            <li>Сбор и кластеризация семантического ядра по ключевым категориям и брендам ASKO.</li>
+            <li>Расширение структуры: новые категории, фильтр-страницы, посадочные под высокомаржинальные запросы.</li>
+            <li>Технический аудит и исправление ошибок: индексация, дубли, редиректы, корректные статусы страниц.</li>
+            <li>Улучшение скорости загрузки и адаптивности, что снизило отказы и усилило поведенческие сигналы.</li>
+          </ul>
+        </div>
+        <div>
+          <p><b>Контент, поведение и ИИ-выдача:</b></p>
+          <ul>
+            <li>Оптимизация карточек и категорий под поиск: заголовки, описания, структура контента.</li>
+            <li>Работа с ИИ-выдачей и быстрыми ответами: понятные блоки с ключевыми преимуществами товаров.</li>
+            <li>Усиление поведенческих факторов: внутренние перелинковки, рекомендации, улучшение навигации.</li>
+            <li>Мониторинг позиций, регулярные эксперименты и связь SEO-гипотез с графиком роста трафика (см. блок ниже).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Графики: оборот и трафик -->
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Оборот и количество заказов</div>
+          <div class="card-sub">Интернет-магазин ASKO (все каналы)</div>
+        </div>
+        <canvas id="revenueChart"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Трафик из поиска</div>
+          <div class="card-sub">SEO + работа с поведением</div>
+        </div>
+        <canvas id="trafficChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Выводы по выручке и трафику -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Ключевые выводы по выручке и трафику</div>
+      </div>
+      <div class="text-block subgrid-2">
+        <div>
+          <p><b>Оборот и заказы (график слева):</b></p>
+          <ul>
+            <li>Оборот вырос с 0 до ~22,3 млн ₽/мес, рост шёл волнами: после крупных изменений — скачки, затем стабилизация.</li>
+            <li>Число заказов вышло на уровень ~150–180 в месяц при среднем чеке ~150 000 ₽.</li>
+            <li>Спады по обороту в отдельных месяцах отражают тесты цен, ассортиментные эксперименты и перераспределение трафика.</li>
+          </ul>
+        </div>
+        <div>
+          <p><b>Трафик из поиска (график справа):</b></p>
+          <ul>
+            <li>Трафик из поиска вырос с 0 до ~20 000 визитов в месяц.</li>
+            <li>Рост был ступенчатым: сначала — технический фундамент и базовая структура, затем — масштабирование контента.</li>
+            <li>Пиковые точки совпадают с запуском новых разделов, улучшением карточек и корректировками по поведенческим метрикам.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Продуктовые изменения -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Продуктовые изменения на сайте</div>
+        <div class="card-sub">Ключевые доработки, влияющие на поведение и конверсию</div>
+      </div>
+      <div class="text-block subgrid-2">
+        <div>
+          <p><b>Что внедрено:</b></p>
+          <ul>
+            <li>ИИ-обзор на карточке товара: агрегирует информацию из открытых источников и выдаёт понятное резюме о товаре.</li>
+            <li>Блок «Функции и преимущества»: структурированная подача ключевых аргументов.</li>
+            <li>Автоматизация работы с отзывами: больше живых отзывов без ручного сбора.</li>
+            <li>Улучшенные фильтры по характеристикам и более логичная навигация по каталогу.</li>
+          </ul>
+        </div>
+        <div>
+          <p><b>Как это повлияло:</b></p>
+          <ul>
+            <li>Пользователи быстрее понимают ценность товара и реже уходят с карточки без действия.</li>
+            <li>Конверсия из просмотра карточки в добавление в корзину выросла по товарам с ИИ-обзором и отзывами.</li>
+            <li>Фильтры сократили время поиска релевантного товара и уменьшили количество “пустых” просмотров страниц.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Поведение пользователей -->
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Поведение пользователей</div>
+          <div class="card-sub">Отказы, глубина просмотра, время на сайте</div>
+        </div>
+        <canvas id="behaviorChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Выводы по поведению -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Что говорят поведенческие метрики</div>
+      </div>
+      <div class="text-block subgrid-2">
+        <div>
+          <ul>
+            <li>Отказы снизились с ~35% до ~18%: пользователи реже закрывают сайт после первой страницы.</li>
+            <li>Глубина просмотра выросла с ~1,5 до ~3,4 страниц — больше взаимодействия с каталогом и рекомендациями.</li>
+            <li>Время на сайте увеличилось с ~1:07 до ~4:05: пользователи стали больше изучать товары и контент.</li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li>Колебания на графике связаны с изменениями структуры, контента и точечными экспериментами по UX.</li>
+            <li>Улучшение поведения стало базой для роста SEO-трафика и общей конверсии сайта.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Выручка по каналам -->
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Выручка по каналам</div>
+          <div class="card-sub">Сайт, OZ, СБМ, Яндекс.Маркет</div>
+        </div>
+        <canvas id="channelsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Выводы по каналам -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Стратегия по каналам и маркетплейсам</div>
+      </div>
+      <div class="text-block subgrid-2">
+        <div>
+          <ul>
+            <li>Интернет-магазин даёт стабильный оборот за счёт органики и прямых заходов.</li>
+            <li>OZ и СБМ используются как дополнительные каналы продаж и захвата спроса по ключевым категориям.</li>
+            <li>Яндекс.Маркет — основной драйвер роста среди маркетплейсов, с наибольшей выручкой и долей в обороте.</li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li>Во всех каналах выстроены единые правила по ценам, остаткам и ассортименту через интеграции.</li>
+            <li>Проработанные карточки, бренд-представление и отзывы усиливают эффект от платных инструментов маркетплейсов.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Итоговый блок -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Итог по проекту ASKO и ценность для работодателя</div>
+      </div>
+      <div class="text-block subgrid-2">
+        <div>
+          <p><b>Итог по проекту:</b></p>
+          <ul>
+            <li>С нуля построен и выведен на рынок интернет-магазин с оборотом ~22,3 млн ₽/мес.</li>
+            <li>Создана система: продукт (сайт), SEO, маркетплейсы, аналитика, автоматизация и команда.</li>
+            <li>Ключевые метрики (трафик, конверсия, поведение) переведены из “нуля” в управляемую, прогнозируемую зону.</li>
+          </ul>
+        </div>
+        <div>
+          <p><b>Что я могу повторить у нового работодателя:</b></p>
+          <ul>
+            <li>Запустить или перезапустить интернет-магазин, выстроив архитектуру, аналитику и продуктовую часть.</li>
+            <li>Построить SEO-канал и работу с маркетплейсами так, чтобы они давали стабильный оборот, а не разовые всплески.</li>
+            <li>Улучшить ключевые продуктовые метрики (отказы, глубина, конверсия) за счёт UX, контента и ИИ-инструментов.</li>
+            <li>Автоматизировать рутину (Python, ИИ, дашборды) и организовать работу команды вокруг понятных целей и цифр.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Подписи месяцев
+    const labels = [
+      'Январь 2024', 'Февраль 2024', 'Март 2024', 'Апрель 2024', 'Май 2024', 'Июнь 2024',
+      'Июль 2024', 'Август 2024', 'Сентябрь 2024', 'Октябрь 2024', 'Ноябрь 2024', 'Декабрь 2024',
+      'Январь 2025', 'Февраль 2025', 'Март 2025', 'Апрель 2025', 'Май 2025', 'Июнь 2025',
+      'Июль 2025', 'Август 2025', 'Сентябрь 2025'
+    ];
+
+    // Оборот сайта (ИМ Asko)
+    const revenueData = [
+      0, 430000, 1206700, 3274365, 2119629, 5289745, 6645050, 5561789, 8686710, 10997320,
+      14796170, 19644510, 7668155, 9459495, 14554090, 15572185, 18673826, 21526933,
+      20300940, 19621880, 22291111
+    ];
+
+    // Заказы (рассчитаны от оборота / 150 000 ₽, сглажены)
+    const ordersData = [
+      0, 3, 8, 22, 14, 35, 44, 37, 58, 73,
+      99, 131, 51, 63, 97, 104, 124, 144,
+      135, 131, 149
+    ];
+
+    // Трафик из поиска
+    const trafficData = [
+      0, 1310, 2178, 1781, 2824, 3449, 3210, 5449, 5721, 8039,
+      8253, 10132, 10278, 12235, 12433, 12960, 15023, 15659,
+      17400, 18852, 20000
+    ];
+
+    // Поведенческие метрики
+    const bounceData = [35.0, 33.6, 35.9, 38.4, 30.7, 29.9, 35.6, 31.7, 26.6, 29.1, 25.0, 24.2, 25.5, 18.5, 18.3, 20.7, 18.8, 21.3, 17.6, 15.7, 18.0];
+    const depthData  = [1.5, 1.61, 1.33, 1.64, 1.91, 1.64, 2.19, 1.97, 2.16, 2.15, 3.14, 2.55, 2.23, 3.08, 2.32, 3.02, 2.14, 2.5, 3.31, 3.68, 3.41];
+    const timeData   = [67, 72, 62, 82, 94, 61, 123, 106, 117, 120, 184, 144, 127, 194, 142, 184, 143, 165, 222, 251, 245];
+
+    // Выручка по каналам
+    const siteChannel = revenueData;
+    const ozChannel = [
+      0, 0, 0, 0, 315800, 176800, 581400, 234800, 707400, 416700,
+      369700, 323800, 662860, 634500, 808100, 1554600, 867200, 764805,
+      1087020, 497448, 629121
+    ];
+    const sbmChannel = [
+      0, 0, 0, 0, 0, 3549600, 5041900, 8146000, 9622790, 15216689,
+      19276980, 10978700, 1688600, 1466100, 1156300, 1063200, 163900,
+      299800, 1496100, 739500, 597600
+    ];
+    const ymChannel = [
+      0, 0, 0, 0, 0, 661620, 9129700, 13852147, 9442266, 14364029,
+      33410403, 31649732, 20810232, 27985243, 33936945, 24245379,
+      13883056, 38131175, 41362485, 26801851, 53785519
+    ];
+
+    // Оборот и заказы
+    new Chart(document.getElementById('revenueChart'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Оборот, ₽',
+            data: revenueData,
+            yAxisID: 'y',
+            backgroundColor: 'rgba(59, 130, 246, 0.4)',
+            borderRadius: 8,
+          },
+          {
+            type: 'line',
+            label: 'Заказы, шт.',
+            data: ordersData,
+            yAxisID: 'y1',
+            borderColor: 'rgba(34, 197, 94, 0.9)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 3,
+            fill: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: { color: '#111827' }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                if (ctx.dataset.label.includes('Оборот')) {
+                  return ctx.dataset.label + ': ' +
+                    ctx.formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+                }
+                return ctx.dataset.label + ': ' + ctx.formattedValue;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#6b7280', maxRotation: 60, minRotation: 40 },
+            grid: { display: false }
+          },
+          y: {
+            position: 'left',
+            ticks: {
+              color: '#6b7280',
+              callback: value => (value / 1000000).toFixed(1) + ' млн'
+            },
+            grid: { color: '#e5e7eb' }
+          },
+          y1: {
+            position: 'right',
+            ticks: { color: '#6b7280' },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // Трафик из поиска
+    new Chart(document.getElementById('trafficChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Трафик из поиска, визиты',
+            data: trafficData,
+            yAxisID: 'y',
+            borderColor: 'rgba(37, 99, 235, 0.9)',
+            borderWidth: 2,
+            tension: 0.35,
+            pointRadius: 2,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: { color: '#111827' }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#6b7280', maxRotation: 60, minRotation: 40 },
+            grid: { display: false }
+          },
+          y: {
+            position: 'left',
+            ticks: {
+              color: '#6b7280',
+              callback: value => value.toLocaleString('ru-RU')
+            },
+            grid: { color: '#e5e7eb' }
+          }
+        }
+      }
+    });
+
+    // Поведение пользователей
+    new Chart(document.getElementById('behaviorChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Отказы, %',
+            data: bounceData,
+            borderColor: 'rgba(239, 68, 68, 0.9)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 2,
+            fill: false,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Глубина просмотра, стр.',
+            data: depthData,
+            borderColor: 'rgba(16, 185, 129, 0.9)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 2,
+            fill: false,
+            yAxisID: 'y1'
+          },
+          {
+            label: 'Время на сайте, сек.',
+            data: timeData,
+            borderColor: 'rgba(129, 140, 248, 0.9)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 2,
+            fill: false,
+            yAxisID: 'y2'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: { color: '#111827' }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#6b7280', maxRotation: 60, minRotation: 40 },
+            grid: { display: false }
+          },
+          y: {
+            position: 'left',
+            ticks: {
+              color: '#6b7280',
+              callback: value => value + '%'
+            },
+            grid: { color: '#e5e7eb' }
+          },
+          y1: {
+            position: 'right',
+            ticks: { color: '#6b7280' },
+            grid: { display: false }
+          },
+          y2: {
+            position: 'right',
+            display: false
+          }
+        }
+      }
+    });
+
+    // Выручка по каналам
+    new Chart(document.getElementById('channelsChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Сайт (ИМ ASKO)',
+            data: siteChannel,
+            borderColor: 'rgba(37, 99, 235, 0.9)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 2,
+            fill: false
+          },
+          {
+            label: 'Ozon',
+            data: ozChannel,
+            borderColor: 'rgba(34, 197, 94, 0.9)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 2,
+            fill: false
+          },
+          {
+            label: 'СберМегаМаркет',
+            data: sbmChannel,
+            borderColor: 'rgba(249, 115, 22, 0.9)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 2,
+            fill: false
+          },
+          {
+            label: 'Яндекс.Маркет',
+            data: ymChannel,
+            borderColor: 'rgba(15, 23, 42, 0.9)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 2,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            labels: { color: '#111827' }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.dataset.label + ': ' +
+                  ctx.formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#6b7280', maxRotation: 60, minRotation: 40 },
+            grid: { display: false }
+          },
+          y: {
+            ticks: {
+              color: '#6b7280',
+              callback: value => (value / 1000000).toFixed(1) + ' млн'
+            },
+            grid: { color: '#e5e7eb' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
